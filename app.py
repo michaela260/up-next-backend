@@ -1,4 +1,4 @@
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
 import requests
 
 from dotenv import load_dotenv
@@ -15,6 +15,13 @@ app = Flask(__name__)
 def home():
   print("Hi console")
   return "Hello world!"
+
+@app.route('/api/token', methods=['POST'])
+def swap_token():
+  code = request.form["code"]
+  print(code)
+  
+  return("Testing")
 
 @app.route('/playlists/new', methods=['GET'])
 def add_playlist():
