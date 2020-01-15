@@ -27,7 +27,7 @@ def swap_token():
   get_token_body = (f'grant_type=authorization_code&code={code}&redirect_uri=up-next-quick-start://spotify-login-callback&client_id={SPOT_CLIENT_ID}&client_secret={SPOT_CLIENT_SECRET}')
   get_token_response = requests.post(get_token_url, data=get_token_body)
   get_token_response_data = get_token_response.json()
-  access_token = get_token_response_data["access_token"])
+  access_token = get_token_response_data["access_token"]
 
   return({"Access token:" f"{access_token}"})
 
