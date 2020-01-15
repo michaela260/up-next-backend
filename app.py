@@ -6,6 +6,8 @@ load_dotenv()
 import os
 AUTH_TOKEN = os.getenv("AUTH_TOKEN")
 TICKETMASTER_KEY = os.getenv("TICKETMASTER_KEY")
+SPOT_CLIENT_ID = os.getenv("SPOT_CLIENT_ID")
+SPOT_CLIENT_SECRET = os.getenv("SPOT_CLIENT_SECRET")
 
 
 app = Flask(__name__)
@@ -20,7 +22,13 @@ def home():
 def swap_token():
   code = request.form["code"]
   print(code)
-  
+
+  get_token_url = "https://accounts.spotify.com/api/token"
+  get_token_body = (f'grant_type=authorization_code&code={code}&redirect_uri=up-next-quick-start://spotify-login-callback&client_id={SPOT_CLIENT_ID}&client_secret={SPOT_CLIENT_SECRET}')
+  get_token_response = requests.post(get_token_url, data=get_token_body)
+  get_token_response_data = get_token_response.json()
+  print(get_token_response_data["access_token"])
+
   return("Testing")
 
 @app.route('/playlists/new', methods=['GET'])
