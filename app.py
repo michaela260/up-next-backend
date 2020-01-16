@@ -129,6 +129,13 @@ def add_playlist():
   }
   r = requests.get(tm_url, params=tm_params)
   events_data = r.json()
+  if "_embedded" not in events[data]:
+    failed_response = {
+      "events_found": "false",
+      "playlist_uri": ""
+    }
+    return jsonify(failed_response)
+
   events_list = events_data["_embedded"]["events"]
   artist_names = []
   for event in events_list:
@@ -215,6 +222,7 @@ def add_playlist():
   print(add_songs_response_headers)
 
   data_to_return = {
+    "events_found": "true",
     "playlist_uri": new_playlist_uri
   }
 
