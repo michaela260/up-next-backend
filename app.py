@@ -94,7 +94,7 @@ def refresh_token():
   print(refresh_token_response_data)
   access_token = refresh_token_response_data["access_token"]
   expires_in = refresh_token_response_data["expires_in"]
-  if refresh_token_response_data["refresh_token"]:
+  if "refresh_token" in refresh_token_response_data:
     refresh_token = refresh_token_response_data["refresh_token"]
   else:
     refresh_token = decrypted_refresh_token
