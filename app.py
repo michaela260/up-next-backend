@@ -129,7 +129,7 @@ def add_playlist():
   }
   r = requests.get(tm_url, params=tm_params)
   events_data = r.json()
-  if "_embedded" not in events[data]:
+  if "_embedded" not in events_data:
     failed_response = {
       "events_found": "false",
       "playlist_uri": ""
