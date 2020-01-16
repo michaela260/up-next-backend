@@ -76,7 +76,7 @@ def swap_token():
 
 @app.route('/api/refresh_token', methods=['POST'])
 def refresh_token():
-  passed_refresh_token_string = request.form["request_token"]
+  passed_refresh_token_string = request.form["refresh_token"]
   print(passed_refresh_token_string)
   passed_refresh_token_byte = passed_refresh_token_string.encode("utf-8")
   decrypted_refresh_token = fern.decrypt(passed_refresh_token_byte).decode("utf-8")
