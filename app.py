@@ -8,7 +8,11 @@ AUTH_TOKEN = os.getenv("AUTH_TOKEN")
 TICKETMASTER_KEY = os.getenv("TICKETMASTER_KEY")
 SPOT_CLIENT_ID = os.getenv("SPOT_CLIENT_ID")
 SPOT_CLIENT_SECRET = os.getenv("SPOT_CLIENT_SECRET")
+CRYPT_KEY = os.getenv("CRYPT_KEY")
 
+from cryptography.fernet import Fernet
+key_byte = CRYPT_KEY.encode("utf-8")
+fern = Fernet(key_byte)
 
 app = Flask(__name__)
 
@@ -16,6 +20,27 @@ app = Flask(__name__)
 @app.route('/')
 def home():
   print("Bye console")
+
+  # key = Fernet.generate_key()
+  # key_string = key.decode("utf-8")
+  
+  # m = Fernet(key_byte)
+  test_string = "Hello it's me"
+  test_token = fern.encrypt(bytes(test_string, encoding='utf-8'))
+  test_token_encrypted_string = test_token.decode("utf-8")
+  test_token_byte = test_token_encrypted_string.encode("utf-8")
+  # test_token_2 = m.encrypt(b"Second token test")
+  
+  # print("Key string coming:")
+  # print(key_string)
+  print(test_token)
+  print(test_token_byte)
+  print(test_token_encrypted_string)
+  print(fern.decrypt(test_token).decode("utf-8"))
+  print(fern.decrypt(test_token_byte).decode("utf-8"))
+  # print(test_token_2)
+  # print(m.decrypt(test_token_2).decode("utf-8"))
+
   return "Hello world!"
 
 @app.route('/api/token', methods=['POST'])
@@ -25,18 +50,22 @@ def swap_token():
 
   get_token_url = "https://accounts.spotify.com/api/token"
   get_token_body = (f'grant_type=authorization_code&code={code}&redirect_uri=up-next-quick-start://spotify-login-callback&client_id={SPOT_CLIENT_ID}&client_secret={SPOT_CLIENT_SECRET}')
+  
   get_token_response = requests.post(get_token_url, data=get_token_body)
   get_token_response_data = get_token_response.json()
   access_token = get_token_response_data["access_token"]
   refresh_token = get_token_response_data["refresh_token"]
   expires_in = get_token_response_data["expires_in"]
 
+  refresh_token_encrypted = fern.encrypt(bytes(refresh_token, encoding='utf-8'))
+  refresh_token_encrypted_string = refresh_token_encrypted.decode("utf-8")
+
   print(get_token_response_data)
 
   token_swap_response_body = {
     "access_token": access_token,
     "expires_in": expires_in,
-    "refresh_token": refresh_token
+    "refresh_token": refresh_token_encrypted_string
   }
   return(jsonify(token_swap_response_body))
 
