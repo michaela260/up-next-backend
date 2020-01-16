@@ -15,7 +15,7 @@ app = Flask(__name__)
 # homepage route
 @app.route('/')
 def home():
-  print("Hi console")
+  print("Bye console")
   return "Hello world!"
 
 @app.route('/api/token', methods=['POST'])
@@ -28,8 +28,17 @@ def swap_token():
   get_token_response = requests.post(get_token_url, data=get_token_body)
   get_token_response_data = get_token_response.json()
   access_token = get_token_response_data["access_token"]
+  refresh_token = get_token_response_data["refresh_token"]
+  expires_in = get_token_response_data["expires_in"]
 
-  return({"Access token:" f"{access_token}"})
+  print(get_token_response_data)
+
+  token_swap_response_body = {
+    "access_token": access_token,
+    "expires_in": expires_in,
+    "refresh_token": refresh_token
+  }
+  return(jsonify(token_swap_response_body))
 
 @app.route('/playlists/new', methods=['GET'])
 def add_playlist():
