@@ -4,7 +4,7 @@ import requests
 from dotenv import load_dotenv
 load_dotenv()
 import os
-AUTH_TOKEN = os.getenv("AUTH_TOKEN")
+
 TICKETMASTER_KEY = os.getenv("TICKETMASTER_KEY")
 SPOT_CLIENT_ID = os.getenv("SPOT_CLIENT_ID")
 SPOT_CLIENT_SECRET = os.getenv("SPOT_CLIENT_SECRET")
@@ -115,6 +115,7 @@ def add_playlist():
 
   # ~~~~~ USER INPUT ~~~~~
   input_city = request.args.get("city")
+  input_access_token = request.args.get("accessToken")
   
   # ~~~~~ TICKETMASTER SEARCH ~~~~~
   tm_url = "https://app.ticketmaster.com/discovery/v2/events.json"
@@ -138,7 +139,7 @@ def add_playlist():
   data["artists"] = artist_names
 
   # ~~~~~ SPOTIFY ARTIST ID SEARCH ~~~~~
-  spot_auth_token = AUTH_TOKEN
+  spot_auth_token = input_access_token
   spot_search_url = "https://api.spotify.com/v1/search"
   spot_headers = {
     "Authorization": "Bearer {spot_auth_token}".format(spot_auth_token = spot_auth_token)
@@ -190,7 +191,7 @@ def add_playlist():
   }
 
   playlist_creation_json = {
-    "name": "Env Playlist",
+    "name": "App Playlist",
     "public": "false"
   }
 
