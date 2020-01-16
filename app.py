@@ -77,6 +77,7 @@ def swap_token():
 @app.route('/api/refresh_token', methods=['POST'])
 def refresh_token():
   passed_refresh_token_string = request.form["request_token"]
+  print(passed_refresh_token_string)
   passed_refresh_token_byte = passed_refresh_token_string.encode("utf-8")
   decrypted_refresh_token = fern.decrypt(passed_refresh_token_byte).decode("utf-8")
 
@@ -89,8 +90,8 @@ def refresh_token():
   }
 
   refresh_token_response = requests.post(refresh_token_url, data=refresh_token_body)
-  
   refresh_token_response_data = refresh_token_response.json()
+  print(refresh_token_response_data)
   access_token = refresh_token_response_data["access_token"]
   expires_in = refresh_token_response_data["expires_in"]
   if refresh_token_response_data["refresh_token"]:
