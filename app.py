@@ -110,14 +110,17 @@ def refresh_token():
 
   return(jsonify(refresh_token_response_body))
   
-@app.route('/playlists/new', methods=['GET'])
+@app.route('/playlists/new', methods=['POST'])
 def add_playlist():
+
+  # ~~~~~ USER INPUT ~~~~~
+  input_city = request.args.get("city")
   
   # ~~~~~ TICKETMASTER SEARCH ~~~~~
   tm_url = "https://app.ticketmaster.com/discovery/v2/events.json"
   tm_params = {
     "apikey": TICKETMASTER_KEY,
-    "city": "Seattle",
+    "city": input_city,
     "segmentId": "KZFzniwnSyZfZ7v7nJ",
     "genreId": "KnvZfZ7vAev",
     "sort": "date,asc",
@@ -214,7 +217,7 @@ def add_playlist():
     "playlist_uri": new_playlist_uri
   }
 
-  return data_to_return
+  return jsonify(data_to_return)
 
 
 if __name__ == '__main__':
