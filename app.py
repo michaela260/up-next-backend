@@ -46,12 +46,9 @@ def home():
 @app.route('/api/token', methods=['POST'])
 def swap_token():
   code = request.form["code"]
-  print(code)
 
   redirect_uri = "up-next-quick-start://spotify-login-callback"
-
   get_token_url = "https://accounts.spotify.com/api/token"
-  # get_token_body = (f'grant_type=authorization_code&code={code}&redirect_uri=up-next-quick-start://spotify-login-callback&client_id={SPOT_CLIENT_ID}&client_secret={SPOT_CLIENT_SECRET}')
   get_token_body = {
     'grant_type': 'authorization_code',
     'code': code,
@@ -60,6 +57,7 @@ def swap_token():
     'client_secret': SPOT_CLIENT_SECRET
   }
   get_token_response = requests.post(get_token_url, data=get_token_body)
+  
   get_token_response_data = get_token_response.json()
   access_token = get_token_response_data["access_token"]
   refresh_token = get_token_response_data["refresh_token"]
@@ -68,15 +66,49 @@ def swap_token():
   refresh_token_encrypted = fern.encrypt(bytes(refresh_token, encoding='utf-8'))
   refresh_token_encrypted_string = refresh_token_encrypted.decode("utf-8")
 
-  print(get_token_response_data)
-
   token_swap_response_body = {
     "access_token": access_token,
     "expires_in": expires_in,
     "refresh_token": refresh_token_encrypted_string
   }
+
   return(jsonify(token_swap_response_body))
 
+@app.route('/api/refresh_token', methods=['POST'])
+def refresh_token():
+  passed_refresh_token_string = request.form["request_token"]
+  passed_refresh_token_byte = passed_refresh_token_string.encode("utf-8")
+  decrypted_refresh_token = fern.decrypt(passed_refresh_token_byte).decode("utf-8")
+
+  refresh_token_url = "https://accounts.spotify.com/api/token"
+  refresh_token_body = {
+    'grant_type': 'refresh_token',
+    'refresh_token': decrypted_refresh_token,
+    'client_id': SPOT_CLIENT_ID,
+    'client_secret': SPOT_CLIENT_SECRET
+  }
+
+  refresh_token_response = requests.post(refresh_token_url, data=refresh_token_body)
+  
+  refresh_token_response_data = refresh_token_response.json()
+  access_token = refresh_token_response_data["access_token"]
+  expires_in = refresh_token_response_data["expires_in"]
+  if refresh_token_response_data["refresh_token"]:
+    refresh_token = refresh_token_response_data["refresh_token"]
+  else:
+    refresh_token = decrypted_refresh_token
+
+  refresh_token_encrypted = fern.encrypt(bytes(refresh_token, encoding='utf-8'))
+  refresh_token_encrypted_string = refresh_token_encrypted.decode("utf-8")
+
+  refresh_token_response_body = {
+    "access_token": access_token,
+    "expires_in": expires_in,
+    "refresh_token": refresh_token_encrypted_string
+  }
+
+  return(jsonify(refresh_token_response_body))
+  
 @app.route('/playlists/new', methods=['GET'])
 def add_playlist():
   
