@@ -133,7 +133,8 @@ def add_playlist():
   if "_embedded" not in events_data:
     failed_response = {
       "events_found": "false",
-      "playlist_uri": ""
+      "playlist_uri": "",
+      "playlist_url": ""
     }
     return jsonify(failed_response)
 
@@ -163,7 +164,7 @@ def add_playlist():
     artist_id_response = requests.get(spot_search_url, headers=spot_headers, params=spot_search_params)
     print(artist_id_response)
     artist_id_response_data = artist_id_response.json()
-    print(artist_id_response.json)
+    print(artist_id_response.json())
     if artist_id_response_data["artists"]["total"] != 0:
       artist_ids.append(artist_id_response_data["artists"]["items"][0]["id"])
 
@@ -177,7 +178,8 @@ def add_playlist():
   if len(artist_ids) == 0:
     failed_response = {
       "events_found": "false",
-      "playlist_uri": ""
+      "playlist_uri": "",
+      "playlist_url": ""
     }
     return jsonify(failed_response)
 
@@ -197,7 +199,8 @@ def add_playlist():
   if len(playlist_song_uris) == 0:
     failed_response = {
       "events_found": "false",
-      "playlist_uri": ""
+      "playlist_uri": "",
+      "playlist_url": ""
     }
     return jsonify(failed_response)
 
@@ -227,6 +230,10 @@ def add_playlist():
   new_playlist_response_data = new_playlist_response.json()
   new_playlist_uri = new_playlist_response_data["uri"]
   new_playlist_id = new_playlist_response_data["id"]
+  if "external_urls" in new_playlist_response_data and "spotify" in new_playlist_response_data["external_urls"]:
+    new_playlist_url = new_playlist_response_data["external_urls"]["spotify"]
+  else:
+    new_playlist_url = ""
 
   # ~~~~~ SPOTIFY ADD SONGS TO PLAYLIST ~~~~~
 
@@ -243,6 +250,7 @@ def add_playlist():
   data_to_return = {
     "events_found": "true",
     "playlist_uri": new_playlist_uri
+    "playlist_url": new_playlist_url
   }
 
   return jsonify(data_to_return)
