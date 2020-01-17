@@ -116,6 +116,7 @@ def add_playlist():
   # ~~~~~ USER INPUT ~~~~~
   input_city = request.args.get("city")
   input_access_token = request.args.get("accessToken")
+  input_playlist_name = request.args.get("playlistName")
   
   # ~~~~~ TICKETMASTER SEARCH ~~~~~
   tm_url = "https://app.ticketmaster.com/discovery/v2/events.json"
@@ -214,7 +215,7 @@ def add_playlist():
   }
 
   playlist_creation_json = {
-    "name": "App Playlist",
+    "name": input_playlist_name,
     "public": "false"
   }
 
