@@ -249,7 +249,7 @@ def add_playlist():
 
   data_to_return = {
     "events_found": "true",
-    "playlist_uri": new_playlist_uri
+    "playlist_uri": new_playlist_uri,
     "playlist_url": new_playlist_url
   }
 
