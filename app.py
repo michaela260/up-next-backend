@@ -171,16 +171,32 @@ def add_playlist():
     "country": "from_token"
   }
 
+  if len(artist_ids) == 0:
+    failed_response = {
+      "events_found": "false",
+      "playlist_uri": ""
+    }
+    return jsonify(failed_response)
+
   for artist_id in artist_ids:
     id = artist_id
     top_song_url = "https://api.spotify.com/v1/artists/{id}/top-tracks".format(id=id)
     top_song_response = requests.get(top_song_url, headers=spot_headers, params=top_song_params)
     top_song_response_data = top_song_response.json()
-    top_song_uri = top_song_response_data["tracks"][0]["uri"]
-    if top_song_uri not in playlist_song_uris:
-      playlist_song_uris.append(top_song_uri)
+
+    if "tracks" in top_song_response_data and len(top_song_response_data["tracks"]) != 0: 
+      top_song_uri = top_song_response_data["tracks"][0]["uri"]
+      if top_song_uri not in playlist_song_uris:
+        playlist_song_uris.append(top_song_uri)
 
   print(playlist_song_uris)
+
+  if len(playlist_song_uris) == 0:
+    failed_response = {
+      "events_found": "false",
+      "playlist_uri": ""
+    }
+    return jsonify(failed_response)
 
   # ~~~~~ SPOTIFY GET CURRENT USER'S ID ~~~~~
 
