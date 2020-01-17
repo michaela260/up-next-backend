@@ -161,7 +161,9 @@ def add_playlist():
   for artist in artist_names:
     spot_search_params["q"] = artist
     artist_id_response = requests.get(spot_search_url, headers=spot_headers, params=spot_search_params)
+    print(artist_id_response)
     artist_id_response_data = artist_id_response.json()
+    print(artist_id_response.json)
     if artist_id_response_data["artists"]["total"] != 0:
       artist_ids.append(artist_id_response_data["artists"]["items"][0]["id"])
 
