@@ -118,6 +118,13 @@ def add_playlist():
   input_access_token = request.args.get("accessToken")
   input_playlist_name = request.args.get("playlistName")
   input_genre_id = request.args.get("genreId")
+
+  # ~~~~~ FAILED RESPONSE TEMPLATE ~~~~~
+  failed_response = {
+    "events_found": "false",
+    "playlist_uri": "",
+    "playlist_url": ""
+  }
   
   # ~~~~~ TICKETMASTER SEARCH ~~~~~
   tm_url = "https://app.ticketmaster.com/discovery/v2/events.json"
@@ -131,12 +138,12 @@ def add_playlist():
   }
   r = requests.get(tm_url, params=tm_params)
   events_data = r.json()
-  if "_embedded" not in events_data:
-    failed_response = {
-      "events_found": "false",
-      "playlist_uri": "",
-      "playlist_url": ""
-    }
+  if "_embedded" not in events_data or "events" not in events_data["_embedded"]:
+    # failed_response = {
+    #   "events_found": "false",
+    #   "playlist_uri": "",
+    #   "playlist_url": ""
+    # }
     return jsonify(failed_response)
 
   events_list = events_data["_embedded"]["events"]
@@ -145,8 +152,8 @@ def add_playlist():
     if "attractions" in event["_embedded"] and "name" in event["_embedded"]["attractions"][0]:
       artist_names.append(event["_embedded"]["attractions"][0]["name"])
 
-  data = {}
-  data["artists"] = artist_names
+  # data = {}
+  # data["artists"] = artist_names
 
   # ~~~~~ SPOTIFY ARTIST ID SEARCH ~~~~~
   spot_auth_token = input_access_token
@@ -177,11 +184,11 @@ def add_playlist():
   }
 
   if len(artist_ids) == 0:
-    failed_response = {
-      "events_found": "false",
-      "playlist_uri": "",
-      "playlist_url": ""
-    }
+    # failed_response = {
+    #   "events_found": "false",
+    #   "playlist_uri": "",
+    #   "playlist_url": ""
+    # }
     return jsonify(failed_response)
 
   for artist_id in artist_ids:
@@ -198,11 +205,11 @@ def add_playlist():
   print(playlist_song_uris)
 
   if len(playlist_song_uris) == 0:
-    failed_response = {
-      "events_found": "false",
-      "playlist_uri": "",
-      "playlist_url": ""
-    }
+    # failed_response = {
+    #   "events_found": "false",
+    #   "playlist_uri": "",
+    #   "playlist_url": ""
+    # }
     return jsonify(failed_response)
 
   # ~~~~~ SPOTIFY GET CURRENT USER'S ID ~~~~~
@@ -210,10 +217,12 @@ def add_playlist():
   spotify_user_url = "https://api.spotify.com/v1/me"
   user_response = requests.get(spotify_user_url, headers=spot_headers)
   user_response_data = user_response.json()
-  user_id = user_response_data["id"]
+  if "id" in user_response_data:
+    user_id = user_response_data["id"]
+  else:
+    return jsonify(failed_response)
 
   # ~~~~~ SPOTIFY PLAYLIST CREATION ~~~~~
-  # Remember to save playlist url to return
 
   playlist_creation_headers = {
     "Authorization": "Bearer {spot_auth_token}".format(spot_auth_token = spot_auth_token)
@@ -229,12 +238,12 @@ def add_playlist():
 
   new_playlist_response = requests.post(playlist_creation_url, headers=playlist_creation_headers, json=playlist_creation_json)
   new_playlist_response_data = new_playlist_response.json()
-  new_playlist_uri = new_playlist_response_data["uri"]
-  new_playlist_id = new_playlist_response_data["id"]
-  if "external_urls" in new_playlist_response_data and "spotify" in new_playlist_response_data["external_urls"]:
+  if "uri" in new_playlist_response_data and "id" in new_playlist_response_data and "external_urls" in new_playlist_response_data and "spotify" in new_playlist_response_data["external_urls"]:
+    new_playlist_uri = new_playlist_response_data["uri"]
+    new_playlist_id = new_playlist_response_data["id"]
     new_playlist_url = new_playlist_response_data["external_urls"]["spotify"]
   else:
-    new_playlist_url = ""
+    return jsonify(failed_response)
 
   # ~~~~~ SPOTIFY ADD SONGS TO PLAYLIST ~~~~~
 
@@ -244,9 +253,10 @@ def add_playlist():
     "uris": playlist_song_uris
   }
   add_songs_response = requests.post(add_songs_url, headers=spot_headers, json=add_songs_json)
-  add_songs_response_headers = add_songs_response.headers
+  # add_songs_response_headers = add_songs_response.headers
 
-  print(add_songs_response_headers)
+  # print(add_songs_response_headers)
+  print(add_songs_response.status_code)
 
   data_to_return = {
     "events_found": "true",
@@ -254,7 +264,10 @@ def add_playlist():
     "playlist_url": new_playlist_url
   }
 
-  return jsonify(data_to_return)
+  if add_songs_response.status_code == 201:
+    return jsonify(data_to_return)
+  else:
+    return jsonify(failed_response)
 
 
 if __name__ == '__main__':
