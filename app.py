@@ -117,6 +117,7 @@ def add_playlist():
   input_city = request.args.get("city")
   input_access_token = request.args.get("accessToken")
   input_playlist_name = request.args.get("playlistName")
+  input_genre_id = request.args.get("genreId")
   
   # ~~~~~ TICKETMASTER SEARCH ~~~~~
   tm_url = "https://app.ticketmaster.com/discovery/v2/events.json"
@@ -124,7 +125,7 @@ def add_playlist():
     "apikey": TICKETMASTER_KEY,
     "city": input_city,
     "segmentId": "KZFzniwnSyZfZ7v7nJ",
-    "genreId": "KnvZfZ7vAev",
+    "genreId": input_genre_id,
     "sort": "date,asc",
     "size": 50
   }
