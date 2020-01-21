@@ -137,6 +137,7 @@ def add_playlist():
       else:
         wait_time = 200
       return jsonify(rate_limiting_response)
+    x += 1
   
   # ~~~~~ TICKETMASTER SEARCH ~~~~~
   tm_url = "https://app.ticketmaster.com/discovery/v2/events.json"
