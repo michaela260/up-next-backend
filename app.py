@@ -125,6 +125,18 @@ def add_playlist():
     "playlist_url": "",
     "wait_time": str(wait_time)
   }
+
+  # ~~~~~ RATE LIMIT TEST ~~~~~
+  rate_limit_test_url = "https://www.cloudflare.com/rate-limit-test/"
+  x = 0
+  while x < 12:
+    rate_limit_test = requests.get(rate_limit_test_url)
+    if rate_limit_test.status_code == 429:
+      if "Retry-After" in rate_limit_test.headers:
+          wait_time = rate_limit_test.headers["Retry-After"]
+      else:
+        wait_time = 200
+      return jsonify(rate_limiting_response)
   
   # ~~~~~ TICKETMASTER SEARCH ~~~~~
   tm_url = "https://app.ticketmaster.com/discovery/v2/events.json"
