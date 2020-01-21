@@ -116,14 +116,16 @@ def add_playlist():
     "successfully_generated": "false",
     "playlist_uri": "",
     "playlist_url": "",
-    "wait_time": ""
+    "wait_time": "",
+    "rate_limited": "false"
   }
 
   rate_limiting_response = {
     "successfully_generated": "false",
     "playlist_uri": "",
     "playlist_url": "",
-    "wait_time": str(wait_time)
+    "wait_time": wait_time,
+    "rate_limited": "true"
   }
 
   # ~~~~~ RATE LIMIT TEST ~~~~~
@@ -135,7 +137,7 @@ def add_playlist():
       if "Retry-After" in rate_limit_test.headers:
           wait_time = rate_limit_test.headers["Retry-After"]
       else:
-        wait_time = 200
+        wait_time = "200"
       return jsonify(rate_limiting_response)
     x += 1
   
@@ -278,7 +280,8 @@ def add_playlist():
     "successfully_generated": "true",
     "playlist_uri": new_playlist_uri,
     "playlist_url": new_playlist_url,
-    "wait_time": ""
+    "wait_time": "",
+    "rate_limited": "false"
   }
 
   if add_songs_response.status_code == 201:
