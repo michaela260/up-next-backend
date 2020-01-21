@@ -110,7 +110,7 @@ def add_playlist():
   input_genre_id = request.args.get("genreId")
 
   # ~~~~~ FAILED RESPONSE TEMPLATES ~~~~~
-  wait_time = ""
+  wait_time = "26"
   
   failed_response = {
     "successfully_generated": "false",
@@ -134,10 +134,11 @@ def add_playlist():
   while x < 12:
     rate_limit_test = requests.get(rate_limit_test_url)
     if rate_limit_test.status_code == 429:
+      print(rate_limit_test.headers)
       if "Retry-After" in rate_limit_test.headers:
           wait_time = rate_limit_test.headers["Retry-After"]
       else:
-        wait_time = "200"
+        wait_time = "360"
       return jsonify(rate_limiting_response)
     x += 1
   
