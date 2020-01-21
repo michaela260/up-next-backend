@@ -139,6 +139,7 @@ def add_playlist():
           wait_time = rate_limit_test.headers["Retry-After"]
       else:
         wait_time = "360"
+      rate_limiting_response["wait_time"] = wait_time
       return jsonify(rate_limiting_response)
     x += 1
   
