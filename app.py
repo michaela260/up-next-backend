@@ -19,28 +19,6 @@ app = Flask(__name__)
 # homepage route
 @app.route('/')
 def home():
-  print("Bye console")
-
-  # key = Fernet.generate_key()
-  # key_string = key.decode("utf-8")
-  
-  # m = Fernet(key_byte)
-  test_string = "Hello it's me"
-  test_token = fern.encrypt(bytes(test_string, encoding='utf-8'))
-  test_token_encrypted_string = test_token.decode("utf-8")
-  test_token_byte = test_token_encrypted_string.encode("utf-8")
-  # test_token_2 = m.encrypt(b"Second token test")
-  
-  # print("Key string coming:")
-  # print(key_string)
-  print(test_token)
-  print(test_token_byte)
-  print(test_token_encrypted_string)
-  print(fern.decrypt(test_token).decode("utf-8"))
-  print(fern.decrypt(test_token_byte).decode("utf-8"))
-  # print(test_token_2)
-  # print(m.decrypt(test_token_2).decode("utf-8"))
-
   return "Hello world!"
 
 @app.route('/api/token', methods=['POST'])
@@ -89,11 +67,24 @@ def refresh_token():
     'client_secret': SPOT_CLIENT_SECRET
   }
 
+  failed_refresh_response = {
+    "access_token": "false",
+    "expires_in": "",
+    "refresh_token": "",
+  }
+
   refresh_token_response = requests.post(refresh_token_url, data=refresh_token_body)
+  if refresh_token_response.status_code != 200:
+    return jsonify(failed_refresh_response)
+  
   refresh_token_response_data = refresh_token_response.json()
-  print(refresh_token_response_data)
-  access_token = refresh_token_response_data["access_token"]
-  expires_in = refresh_token_response_data["expires_in"]
+
+  if "access_token" in refresh_token_response_data and "expires_in" in refresh_token_response_data:
+    access_token = refresh_token_response_data["access_token"]
+    expires_in = refresh_token_response_data["expires_in"]
+  else:
+    return jsonify(failed_refresh_response)
+
   if "refresh_token" in refresh_token_response_data:
     refresh_token = refresh_token_response_data["refresh_token"]
   else:
