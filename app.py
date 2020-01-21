@@ -55,7 +55,6 @@ def swap_token():
 @app.route('/api/refresh_token', methods=['POST'])
 def refresh_token():
   passed_refresh_token_string = request.form["refresh_token"]
-  print(passed_refresh_token_string)
   passed_refresh_token_byte = passed_refresh_token_string.encode("utf-8")
   decrypted_refresh_token = fern.decrypt(passed_refresh_token_byte).decode("utf-8")
 
@@ -70,7 +69,7 @@ def refresh_token():
   failed_refresh_response = {
     "access_token": "false",
     "expires_in": "",
-    "refresh_token": "",
+    "refresh_token": ""
   }
 
   refresh_token_response = requests.post(refresh_token_url, data=refresh_token_body)
@@ -110,11 +109,21 @@ def add_playlist():
   input_playlist_name = request.args.get("playlistName")
   input_genre_id = request.args.get("genreId")
 
-  # ~~~~~ FAILED RESPONSE TEMPLATE ~~~~~
+  # ~~~~~ FAILED RESPONSE TEMPLATES ~~~~~
+  wait_time = ""
+  
   failed_response = {
-    "events_found": "false",
+    "successfully_generated": "false",
     "playlist_uri": "",
-    "playlist_url": ""
+    "playlist_url": "",
+    "wait_time": ""
+  }
+
+  rate_limiting_response = {
+    "successfully_generated": "false",
+    "playlist_uri": "",
+    "playlist_url": "",
+    "wait_time": str(wait_time)
   }
   
   # ~~~~~ TICKETMASTER SEARCH ~~~~~
@@ -130,11 +139,6 @@ def add_playlist():
   r = requests.get(tm_url, params=tm_params)
   events_data = r.json()
   if "_embedded" not in events_data or "events" not in events_data["_embedded"]:
-    # failed_response = {
-    #   "events_found": "false",
-    #   "playlist_uri": "",
-    #   "playlist_url": ""
-    # }
     return jsonify(failed_response)
 
   events_list = events_data["_embedded"]["events"]
@@ -142,9 +146,6 @@ def add_playlist():
   for event in events_list:
     if "attractions" in event["_embedded"] and "name" in event["_embedded"]["attractions"][0]:
       artist_names.append(event["_embedded"]["attractions"][0]["name"])
-
-  # data = {}
-  # data["artists"] = artist_names
 
   # ~~~~~ SPOTIFY ARTIST ID SEARCH ~~~~~
   spot_auth_token = input_access_token
@@ -161,9 +162,14 @@ def add_playlist():
   for artist in artist_names:
     spot_search_params["q"] = artist
     artist_id_response = requests.get(spot_search_url, headers=spot_headers, params=spot_search_params)
-    print(artist_id_response)
+    
+    if artist_id_response.status_code == 429:
+      if "Retry-After" in artist_id_response.headers:
+        wait_time = artist_id_response.headers["Retry-After"]
+      return jsonify(rate_limiting_response)
+
     artist_id_response_data = artist_id_response.json()
-    print(artist_id_response.json())
+
     if artist_id_response_data["artists"]["total"] != 0:
       artist_ids.append(artist_id_response_data["artists"]["items"][0]["id"])
 
@@ -175,17 +181,18 @@ def add_playlist():
   }
 
   if len(artist_ids) == 0:
-    # failed_response = {
-    #   "events_found": "false",
-    #   "playlist_uri": "",
-    #   "playlist_url": ""
-    # }
     return jsonify(failed_response)
 
   for artist_id in artist_ids:
     id = artist_id
     top_song_url = "https://api.spotify.com/v1/artists/{id}/top-tracks".format(id=id)
     top_song_response = requests.get(top_song_url, headers=spot_headers, params=top_song_params)
+    
+    if top_song_response.status_code == 429:
+      if "Retry-After" in top_song_response.headers:
+        wait_time = top_song_response.headers["Retry-After"]
+      return jsonify(rate_limiting_response)
+    
     top_song_response_data = top_song_response.json()
 
     if "tracks" in top_song_response_data and len(top_song_response_data["tracks"]) != 0: 
@@ -193,20 +200,19 @@ def add_playlist():
       if top_song_uri not in playlist_song_uris:
         playlist_song_uris.append(top_song_uri)
 
-  print(playlist_song_uris)
-
   if len(playlist_song_uris) == 0:
-    # failed_response = {
-    #   "events_found": "false",
-    #   "playlist_uri": "",
-    #   "playlist_url": ""
-    # }
     return jsonify(failed_response)
 
   # ~~~~~ SPOTIFY GET CURRENT USER'S ID ~~~~~
 
   spotify_user_url = "https://api.spotify.com/v1/me"
   user_response = requests.get(spotify_user_url, headers=spot_headers)
+  
+  if user_response.status_code == 429:
+      if "Retry-After" in user_response.headers:
+        wait_time = user_response.headers["Retry-After"]
+      return jsonify(rate_limiting_response)
+  
   user_response_data = user_response.json()
   if "id" in user_response_data:
     user_id = user_response_data["id"]
@@ -217,7 +223,6 @@ def add_playlist():
 
   playlist_creation_headers = {
     "Authorization": "Bearer {spot_auth_token}".format(spot_auth_token = spot_auth_token)
-    # "Content-Type": "application/json"
   }
 
   playlist_creation_json = {
@@ -228,6 +233,12 @@ def add_playlist():
   playlist_creation_url = "https://api.spotify.com/v1/users/{user_id}/playlists".format(user_id = user_id)
 
   new_playlist_response = requests.post(playlist_creation_url, headers=playlist_creation_headers, json=playlist_creation_json)
+  
+  if new_playlist_response.status_code == 429:
+      if "Retry-After" in new_playlist_response.headers:
+        wait_time = new_playlist_response.headers["Retry-After"]
+      return jsonify(rate_limiting_response)
+  
   new_playlist_response_data = new_playlist_response.json()
   if "uri" in new_playlist_response_data and "id" in new_playlist_response_data and "external_urls" in new_playlist_response_data and "spotify" in new_playlist_response_data["external_urls"]:
     new_playlist_uri = new_playlist_response_data["uri"]
@@ -244,15 +255,17 @@ def add_playlist():
     "uris": playlist_song_uris
   }
   add_songs_response = requests.post(add_songs_url, headers=spot_headers, json=add_songs_json)
-  # add_songs_response_headers = add_songs_response.headers
 
-  # print(add_songs_response_headers)
-  print(add_songs_response.status_code)
+  if add_songs_response.status_code == 429:
+      if "Retry-After" in add_songs_response.headers:
+        wait_time = add_songs_response.headers["Retry-After"]
+      return jsonify(rate_limiting_response)
 
   data_to_return = {
-    "events_found": "true",
+    "successfully_generated": "true",
     "playlist_uri": new_playlist_uri,
-    "playlist_url": new_playlist_url
+    "playlist_url": new_playlist_url,
+    "wait_time": ""
   }
 
   if add_songs_response.status_code == 201:
