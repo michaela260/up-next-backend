@@ -110,7 +110,7 @@ def add_playlist():
   input_genre_id = request.args.get("genreId")
 
   # ~~~~~ FAILED RESPONSE TEMPLATES ~~~~~
-  wait_time = "26"
+  wait_time = ""
   
   failed_response = {
     "successfully_generated": "false",
@@ -127,21 +127,6 @@ def add_playlist():
     "wait_time": wait_time,
     "rate_limited": "true"
   }
-
-  # ~~~~~ RATE LIMIT TEST ~~~~~
-  rate_limit_test_url = "https://www.cloudflare.com/rate-limit-test/"
-  x = 0
-  while x < 12:
-    rate_limit_test = requests.get(rate_limit_test_url)
-    if rate_limit_test.status_code == 429:
-      print(rate_limit_test.headers)
-      if "Retry-After" in rate_limit_test.headers:
-          wait_time = rate_limit_test.headers["Retry-After"]
-      else:
-        wait_time = "360"
-      rate_limiting_response["wait_time"] = wait_time
-      return jsonify(rate_limiting_response)
-    x += 1
   
   # ~~~~~ TICKETMASTER SEARCH ~~~~~
   tm_url = "https://app.ticketmaster.com/discovery/v2/events.json"
@@ -183,6 +168,7 @@ def add_playlist():
     if artist_id_response.status_code == 429:
       if "Retry-After" in artist_id_response.headers:
         wait_time = artist_id_response.headers["Retry-After"]
+        rate_limiting_response["wait_time"] = wait_time
       return jsonify(rate_limiting_response)
 
     artist_id_response_data = artist_id_response.json()
@@ -208,6 +194,7 @@ def add_playlist():
     if top_song_response.status_code == 429:
       if "Retry-After" in top_song_response.headers:
         wait_time = top_song_response.headers["Retry-After"]
+        rate_limiting_response["wait_time"] = wait_time
       return jsonify(rate_limiting_response)
     
     top_song_response_data = top_song_response.json()
@@ -228,6 +215,7 @@ def add_playlist():
   if user_response.status_code == 429:
       if "Retry-After" in user_response.headers:
         wait_time = user_response.headers["Retry-After"]
+        rate_limiting_response["wait_time"] = wait_time
       return jsonify(rate_limiting_response)
   
   user_response_data = user_response.json()
@@ -254,6 +242,7 @@ def add_playlist():
   if new_playlist_response.status_code == 429:
       if "Retry-After" in new_playlist_response.headers:
         wait_time = new_playlist_response.headers["Retry-After"]
+        rate_limiting_response["wait_time"] = wait_time
       return jsonify(rate_limiting_response)
   
   new_playlist_response_data = new_playlist_response.json()
@@ -276,6 +265,7 @@ def add_playlist():
   if add_songs_response.status_code == 429:
       if "Retry-After" in add_songs_response.headers:
         wait_time = add_songs_response.headers["Retry-After"]
+        rate_limiting_response["wait_time"] = wait_time
       return jsonify(rate_limiting_response)
 
   data_to_return = {
