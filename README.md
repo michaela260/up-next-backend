@@ -1,10 +1,14 @@
 # Up Next
 ##### An iOS app that generates Spotify playlists of songs by artists with upcoming concerts in your city.
 
-## App Purpose
 Concert lovers are often in search of upcoming shows in their area. They can turn to Spotify to see a list of concerts by artists they follow, but this list does not include artists they don't already know and it is not linked to a playlist. Up Next generates genre-filtered playlists of songs by artists with upcoming concerts in a given city to help users more easily discover new artists and decide which concerts they would be interested in attending.
 
 Up Next was developed as a capstone project for [Ada Developer's Academy](https://adadevelopersacademy.org/), a nonprofit coding bootcamp for women and gender diverse people in Seattle, WA.
+
+## App Features
+1.  User can enter their location, a playlist name, and a music genre and get back a Spotify playlist of songs by artists with upcoming concerts in their area
+2.  The created playlist is saved to the user's spotify account
+    - The playlist includes a top song by each artist in the given genre with an upcoming concert in the user's area
 
 ## Technologies
 - Back-end:
@@ -42,11 +46,6 @@ Do not save this key in your project code or commit it to github, instead save i
 In order to access this back-end API wrapper from the front-end of the application, you will need to deploy it to a secure server (https). I used [Heroku](https://devcenter.heroku.com/articles/getting-started-with-python) for deployment. After deploying to Heroku, you will need to add your environment variables there as well. See [here](https://devcenter.heroku.com/articles/config-vars) for instructions about adding environment variables to Heroku, and use the same variables that you stored in your .env file.
 
 To run the app itself, download the [front-end repository](https://github.com/michaela260/up-next-frontend) and its dependencies, and build the app on an iPhone 11 or simulator with iOS 13.2+.
-
-## App Features
-1.  User can enter their location, a playlist name, and a music genre and get back a Spotify playlist of songs by artists with upcoming concerts in their area
-2.  The created playlist is saved to the user's spotify account
-    - The playlist includes a top song by each artist in the given genre with an upcoming concert in the user's area
 
 ## Learning Goals
 - Develop an iOS app using Swift and XCode
