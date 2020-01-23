@@ -10,6 +10,12 @@ Up Next was developed as a capstone project for [Ada Developer's Academy](https:
 2.  The created playlist is saved to the user's spotify account
     - The playlist includes a top song by each artist in the given genre with an upcoming concert in the user's area
 
+<p align="center"> 
+  <img height="400" src="https://github.com/michaela260/up-next-backend/blob/master/images/LogIn.png" alt="LogIn Screen">
+  <img height="400" src="https://github.com/michaela260/up-next-backend/blob/master/images/Form.png" alt="Form Screen">
+  <img height="400" src="https://github.com/michaela260/up-next-backend/blob/master/images/PlaylistGenerated.png" alt="Confirmation Screen">
+</p>
+
 ## Technologies
 - Back-end:
   - Python Flask API wrapper
@@ -52,10 +58,3 @@ To run the app itself, download the [front-end repository](https://github.com/mi
 - Build an API wrapper back-end using Python and Flask
 - Implement an authorization flow with OAuth 2 in a mobile application
 - Better understand how to integrate external API data into a front-end mobile application
-
-## Screenshots
-<p align="center"> 
-  <img height="400" src="https://github.com/michaela260/up-next-backend/blob/master/images/LogIn.png" alt="LogIn Screen">
-  <img height="400" src="https://github.com/michaela260/up-next-backend/blob/master/images/Form.png" alt="Form Screen">
-  <img height="400" src="https://github.com/michaela260/up-next-backend/blob/master/images/PlaylistGenerated.png" alt="Confirmation Screen">
-</p>
