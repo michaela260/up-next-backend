@@ -54,7 +54,8 @@ To run the app itself, download the [front-end repository](https://github.com/mi
 - Better understand how to integrate external API data into a front-end mobile application
 
 ## Screenshots
+<p align="center"> 
   <img height="400" src="https://github.com/michaela260/up-next-backend/blob/master/images/LogIn.png" alt="LogIn Screen">
-
-<!-- ![Form Screen](https://github.com/michaela260/up-next-backend/blob/master/images/Form.png)
-![Confirmation Screen](https://github.com/michaela260/up-next-backend/blob/master/images/PlaylistGenerated.png) -->
+  <img height="400" src="https://github.com/michaela260/up-next-backend/blob/master/images/Form.png" alt="Form Screen">
+  <img height="400" src="https://github.com/michaela260/up-next-backend/blob/master/images/PlaylistGenerated.png" alt="Confirmation Screen">
+</p>
