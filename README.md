@@ -33,7 +33,7 @@ Download this repository and install the following dependencies in a virtualenv.
 
 After installing the dependencies, create a .env file within the project root directory.
 
-You will need to create a create a Spotify App in your [Spotify Developer Dashboard](https://developer.spotify.com/dashboard/login) to receive a Spotify Client ID and Client Secret. Add these to your .env as SPOT_CLIENT_ID and SPOT_CLIENT_SECRET. Additionally, you will need to register for a [Ticketmaster API key](https://developer-acct.ticketmaster.com/user/register). Add the key to your .env as TICKETMASTER_KEY.
+You will need to create a Spotify App in your [Spotify Developer Dashboard](https://developer.spotify.com/dashboard/login) to receive a Spotify Client ID and Client Secret. Add these to your .env as SPOT_CLIENT_ID and SPOT_CLIENT_SECRET. Additionally, you will need to register for a [Ticketmaster API key](https://developer-acct.ticketmaster.com/user/register). Add the key to your .env as TICKETMASTER_KEY.
 
 Finally, you will need to generate an encryption key with Cryptography and decode the bytes to a string:
 ```python
