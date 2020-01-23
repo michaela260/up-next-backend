@@ -52,3 +52,8 @@ To run the app itself, download the [front-end repository](https://github.com/mi
 - Build an API wrapper back-end using Python and Flask
 - Implement an authorization flow with OAuth 2 in a mobile application
 - Better understand how to integrate external API data into a front-end mobile application
+
+## Screenshots
+![LogIn Screen](https://github.com/michaela260/up-next-backend/blob/master/images/LogIn.png)
+![Form Screen](https://github.com/michaela260/up-next-backend/blob/master/images/Form.png)
+![Confirmation Screen](https://github.com/michaela260/up-next-backend/blob/master/images/PlaylistGenerated.png)
