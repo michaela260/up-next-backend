@@ -16,6 +16,9 @@ Up Next was developed as a capstone project for [Ada Developer's Academy](https:
   <img height="400" src="https://github.com/michaela260/up-next-backend/blob/master/images/PlaylistGenerated.png" alt="Confirmation Screen">
 </p>
 
+## Demo
+Watch a video demo of the app [at this link](https://drive.google.com/file/d/1OS7H0u8zFjlsVylvknI8KghlU6DWQTIH/view?usp=sharing).
+
 ## Technologies
 - Back-end:
   - Python Flask API wrapper
